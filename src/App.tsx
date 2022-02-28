@@ -1,7 +1,6 @@
 import React from "react";
-import logo from "./logo.svg";
 import "./App.scss";
-import Mortgage from "./mortgage/Mortgage";
+import Mortgage from "./containers/mortgage/Mortgage";
 
 function App() {
   return (
