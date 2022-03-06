@@ -24,16 +24,13 @@ function RequiredMortgage(props: RequiredMortgageProps) {
   }, [askingPrice, downPaymentPercentage]);
 
   useEffect(() => {
-    setMortgageInsurance(
-      getMortgageInsurance(
-        askingPrice,
-        downPaymentAmount,
-        downPaymentPercentage
-      )
+    const mortgageInsurance = getMortgageInsurance(
+      askingPrice,
+      downPaymentAmount,
+      downPaymentPercentage
     );
-  }, [downPaymentAmount]);
+    setMortgageInsurance(mortgageInsurance);
 
-  useEffect(() => {
     const totalMortgage = getTotalMortgage(
       askingPrice,
       downPaymentAmount,
@@ -43,7 +40,7 @@ function RequiredMortgage(props: RequiredMortgageProps) {
       setTotalMortgage(totalMortgage);
       onTotalMortgageUpdate && onTotalMortgageUpdate(totalMortgage);
     }
-  }, [mortgageInsurance]);
+  }, [downPaymentAmount, mortgageInsurance]);
 
   const handleDownPaymentPercentageChange = (event: ChangeEvent<any>) => {
     setDownPaymentPercentage(event.target.value);
