@@ -4,12 +4,17 @@ import React, { ChangeEvent, useEffect, useState } from "react";
 interface RequiredMortgageProps {
   initDownPaymentPercentage: number;
   askingPrice: number;
-  onTotalMortgageUpdate?: (totalMortgage: number) => void;
+  index: number;
+  onTotalMortgageUpdate?: (totalMortgage: number, index: number) => void;
 }
 
 function RequiredMortgage(props: RequiredMortgageProps) {
-  const { initDownPaymentPercentage, askingPrice, onTotalMortgageUpdate } =
-    props;
+  const {
+    initDownPaymentPercentage,
+    askingPrice,
+    index,
+    onTotalMortgageUpdate,
+  } = props;
   const [downPaymentPercentage, setDownPaymentPercentage] = useState(
     initDownPaymentPercentage
   );
@@ -21,9 +26,7 @@ function RequiredMortgage(props: RequiredMortgageProps) {
     setDownPaymentAmount(
       getDownPaymentAmount(askingPrice, downPaymentPercentage)
     );
-  }, [askingPrice, downPaymentPercentage]);
 
-  useEffect(() => {
     const mortgageInsurance = getMortgageInsurance(
       askingPrice,
       downPaymentAmount,
@@ -38,9 +41,9 @@ function RequiredMortgage(props: RequiredMortgageProps) {
     );
     if (totalMortgage) {
       setTotalMortgage(totalMortgage);
-      onTotalMortgageUpdate && onTotalMortgageUpdate(totalMortgage);
+      onTotalMortgageUpdate && onTotalMortgageUpdate(totalMortgage, index);
     }
-  }, [downPaymentAmount, mortgageInsurance]);
+  }, [askingPrice, downPaymentPercentage]);
 
   const handleDownPaymentPercentageChange = (event: ChangeEvent<any>) => {
     setDownPaymentPercentage(event.target.value);
@@ -75,7 +78,6 @@ function RequiredMortgage(props: RequiredMortgageProps) {
     downPayment: number,
     insurance: number
   ) => {
-    console.log(askingPrice, downPayment, insurance);
     return askingPrice - downPayment + insurance;
   };
 

@@ -1,11 +1,17 @@
 import { Grid, TextField } from "@mui/material";
-import { ChangeEvent, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import MortgagePayment from "../../components/MortgagePayment/MortgagePayment";
 import RequiredMortgage from "../../components/RequiredMortgage/RequiredMortgage";
 
+interface Mortgages {
+  downPaymentPercentage: number;
+}
+
 function Mortgage() {
   const [askingPrice, setAskingPrice] = useState(0);
-  const [totalMortgageRequired, setTotalMortgageRequired] = useState(0);
+  const [totalMortgageRequired, setTotalMortgageRequired] = useState<number[]>(
+    []
+  );
   const initDownPaymentPercentages = [6.75, 10, 15, 20];
   const amortizationPeriods = [5, 10, 15, 20, 25, 30];
 
@@ -13,9 +19,14 @@ function Mortgage() {
     setAskingPrice(event.target.value);
   };
 
-  const onTotalMortgageUpdate = (totalMortgage: number) => {
-    setTotalMortgageRequired(totalMortgage);
+  const onTotalMortgageUpdate = (totalMortgage: number, index: number) => {
+    totalMortgageRequired[index] = totalMortgage;
+    setTotalMortgageRequired(totalMortgageRequired);
   };
+
+  useEffect(() => {
+    console.log("totalMortgageRequired", totalMortgageRequired);
+  }, [totalMortgageRequired]);
 
   return (
     <div className="mortgage">
@@ -49,12 +60,13 @@ function Mortgage() {
             <Grid item>Total Mortgage Required</Grid>
           </Grid>
         </Grid>
-        {initDownPaymentPercentages.map((downPaymentPercentage) => (
-          <Grid item xs={2.5} key={downPaymentPercentage}>
+        {initDownPaymentPercentages.map((downPaymentPercentage, index) => (
+          <Grid item xs={2.5} key={index}>
             <RequiredMortgage
               initDownPaymentPercentage={downPaymentPercentage}
               askingPrice={askingPrice}
               onTotalMortgageUpdate={onTotalMortgageUpdate}
+              index={index}
             />
           </Grid>
         ))}
@@ -77,11 +89,11 @@ function Mortgage() {
             <Grid item>Total Mortgage Payment</Grid>
           </Grid>
         </Grid>
-        {initDownPaymentPercentages.map((_, index) => (
+        {initDownPaymentPercentages.map((downPaymentPercentage, index) => (
           <Grid item xs={2.5} key={index}>
             <MortgagePayment
               amortizationPeriods={amortizationPeriods}
-              totalMortgage={totalMortgageRequired}
+              totalMortgage={totalMortgageRequired[index]}
             />
           </Grid>
         ))}
