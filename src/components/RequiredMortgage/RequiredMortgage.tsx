@@ -1,5 +1,6 @@
 import { Grid, TextField } from "@mui/material";
 import React, { ChangeEvent, useEffect, useState } from "react";
+import { Utils } from "../../utils/utils";
 
 interface RequiredMortgageProps {
   initDownPaymentPercentage: number;
@@ -23,17 +24,23 @@ function RequiredMortgage(props: RequiredMortgageProps) {
   const [totalMortgage, setTotalMortgage] = useState(0);
 
   useEffect(() => {
+    // Update Downpayment
     setDownPaymentAmount(
       getDownPaymentAmount(askingPrice, downPaymentPercentage)
     );
+  }, [askingPrice, downPaymentPercentage]);
 
+  // Update Mortgage Insurance
+  useEffect(() => {
     const mortgageInsurance = getMortgageInsurance(
       askingPrice,
-      downPaymentAmount,
-      downPaymentPercentage
+      downPaymentAmount
     );
     setMortgageInsurance(mortgageInsurance);
+  }, [downPaymentAmount]);
 
+  // Update Total Mortgage required
+  useEffect(() => {
     const totalMortgage = getTotalMortgage(
       askingPrice,
       downPaymentAmount,
@@ -43,7 +50,7 @@ function RequiredMortgage(props: RequiredMortgageProps) {
       setTotalMortgage(totalMortgage);
       onTotalMortgageUpdate && onTotalMortgageUpdate(totalMortgage, index);
     }
-  }, [askingPrice, downPaymentPercentage]);
+  }, [mortgageInsurance]);
 
   const handleDownPaymentPercentageChange = (event: ChangeEvent<any>) => {
     setDownPaymentPercentage(event.target.value);
@@ -56,19 +63,37 @@ function RequiredMortgage(props: RequiredMortgageProps) {
     return (askingPrice * percentage) / 100;
   };
 
-  const getMortgageInsurance = (
-    askingPrice: number,
-    downPayment: number,
-    percentage: number
-  ) => {
-    if (percentage >= 5 && percentage < 10) {
-      return ((askingPrice - downPayment) * 4) / 100;
+  const getMortgageInsurance = (askingPrice: number, downPayment: number) => {
+    const loanAmount = askingPrice - downPaymentAmount;
+    const cmhcPremium = calCmhcPremium(askingPrice, downPayment);
+    return Utils.round(loanAmount * cmhcPremium);
+  };
+
+  // Caluclations taken from CMHC website
+  // Refer https://www.cmhc-schl.gc.ca/en/consumers/home-buying/calculators/mortgage-calculator
+  const calCmhcPremium = (askingPrice: number, downPaymentAmount: number) => {
+    const loanAmount = askingPrice - downPaymentAmount;
+    if (downPaymentAmount >= askingPrice * 0.2) {
+      return 0;
     }
-    if (percentage >= 10 && percentage < 15) {
-      return ((askingPrice - downPayment) * 3.1) / 100;
+    const premiumRate = loanAmount / askingPrice;
+    if (premiumRate <= 0.65) {
+      return 0.006;
     }
-    if (percentage >= 15 && percentage < 20) {
-      return ((askingPrice - downPayment) * 2.8) / 100;
+    if (premiumRate <= 0.75) {
+      return 0.017;
+    }
+    if (premiumRate <= 0.8) {
+      return 0.024;
+    }
+    if (premiumRate <= 0.85) {
+      return 0.028;
+    }
+    if (premiumRate <= 0.9) {
+      return 0.031;
+    }
+    if (premiumRate <= 0.95) {
+      return 0.04;
     }
     return 0;
   };
