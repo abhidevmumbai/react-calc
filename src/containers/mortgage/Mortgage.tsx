@@ -1,4 +1,4 @@
-import { Grid, TextField } from "@mui/material";
+import { Button, Grid, TextField } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
 import MortgagePayment from "../../components/MortgagePayment/MortgagePayment";
 import RequiredMortgage from "../../components/RequiredMortgage/RequiredMortgage";
@@ -8,7 +8,7 @@ interface Mortgages {
 }
 
 function Mortgage() {
-  const [askingPrice, setAskingPrice] = useState(0);
+  const [askingPrice, setAskingPrice] = useState<number>(0);
   const [totalMortgageRequired, setTotalMortgageRequired] = useState<number[]>(
     []
   );
@@ -16,7 +16,7 @@ function Mortgage() {
   const amortizationPeriods = [5, 10, 15, 20, 25, 30];
 
   const handleAskingPriceChange = (event: ChangeEvent<any>) => {
-    setAskingPrice(event.target.value);
+    setAskingPrice(parseInt(event.target.value));
   };
 
   const onTotalMortgageUpdate = (totalMortgage: number, index: number) => {
@@ -40,8 +40,17 @@ function Mortgage() {
         <Grid item xs={2} textAlign={"right"}>
           Asking Price
         </Grid>
-        <Grid item xs={10} textAlign={"left"}>
-          <TextField value={askingPrice} onChange={handleAskingPriceChange} />
+        <Grid item xs={2} textAlign={"left"}>
+          <TextField
+            fullWidth={true}
+            value={askingPrice}
+            onChange={handleAskingPriceChange}
+          />
+        </Grid>
+        <Grid item xs={8} textAlign={"left"}>
+          <Button size="large" variant="contained" color="primary">
+            Go
+          </Button>
         </Grid>
         {/* Row 1 */}
         <Grid item xs={2}>
