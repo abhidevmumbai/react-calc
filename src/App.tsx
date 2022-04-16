@@ -1,6 +1,6 @@
 import React from "react";
 import "./App.scss";
-import Mortgage from "./containers/mortgage/Mortgage";
+import Mortgage from "./mortgage/Mortgage";
 
 function App() {
   return (

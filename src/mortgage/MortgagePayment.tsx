@@ -6,18 +6,19 @@ import {
   TextField,
 } from "@mui/material";
 import React, { ChangeEvent, useEffect, useState } from "react";
+import { Utils } from "../shared";
 
 interface MortgagePaymentProps {
   amortizationPeriods: number[];
-  totalMortgage: any;
+  totalMortgage: number;
 }
 
-function MortgagePayment(props: MortgagePaymentProps) {
+export function MortgagePayment(props: MortgagePaymentProps) {
   const { amortizationPeriods, totalMortgage } = props;
   const [amortizationPeriod, setAmortizationPeriod] = useState(
-    amortizationPeriods[0]
+    amortizationPeriods[4]
   );
-  const [mortgageRate, setMortgageRate] = useState(0);
+  const [mortgageRate, setMortgageRate] = useState<number>(3);
   const [mortgagePayment, setMortgagePayment] = useState(0);
 
   useEffect(() => {
@@ -27,11 +28,11 @@ function MortgagePayment(props: MortgagePaymentProps) {
   }, [totalMortgage, amortizationPeriod, mortgageRate]);
 
   const handleAmortizationPeriodChnage = (event: SelectChangeEvent<any>) => {
-    setAmortizationPeriod(event.target.value);
+    setAmortizationPeriod(parseInt(event.target.value));
   };
 
   const handleMortgageRateChange = (event: ChangeEvent<any>) => {
-    setMortgageRate(event.target.value);
+    setMortgageRate(parseInt(event.target.value));
   };
 
   //   refer https://www.thebalance.com/calculate-mortgage-315668
@@ -45,21 +46,28 @@ function MortgagePayment(props: MortgagePaymentProps) {
     //     (rateOfInterest / Math.pow(1 + rateOfInterest, totalPayments) - 1));
     // return perMonthPayment;
     const paymentsPerYear = 12;
-    var effective_rate = nominal_to_effective(rate, paymentsPerYear);
-    var nominal_rate = effective_to_nominal(effective_rate, paymentsPerYear);
-    var total_payments = paymentsPerYear * period;
-    var perMonthPayment =
-      amount *
-      (nominal_rate +
-        nominal_rate / (Math.pow(1 + nominal_rate, total_payments) - 1));
-    console.log(
-      "cal",
-      nominal_rate,
-      effective_rate,
-      amount,
-      perMonthPayment,
-      total_payments
-    );
+    // var effective_rate = nominal_to_effective(rate, paymentsPerYear);
+    // var nominal_rate = effective_to_nominal(effective_rate, paymentsPerYear);
+    var totalPayments = paymentsPerYear * period;
+    // var perMonthPayment =
+    //   amount *
+    //   (nominal_rate +
+    //     nominal_rate / (Math.pow(1 + nominal_rate, totalPayments) - 1));
+    // console.log(
+    //   "cal",
+    //   nominal_rate,
+    //   effective_rate,
+    //   amount,
+    //   perMonthPayment,
+    //   totalPayments
+    // );
+    // return perMonthPayment;
+    // Now compute the monthly payment figure, using esoteric math.
+    var x = Math.pow(1 + rate, totalPayments);
+    const perMonthPayment = Utils.round((amount * x * rate) / (x - 1));
+    const totalLoanPayment = Utils.round(perMonthPayment * totalPayments);
+    const totalInterest = Utils.round(perMonthPayment * totalPayments - amount);
+    console.log(x, perMonthPayment, totalLoanPayment, totalInterest);
     return perMonthPayment;
   };
 
@@ -112,5 +120,3 @@ function MortgagePayment(props: MortgagePaymentProps) {
     </Grid>
   );
 }
-
-export default MortgagePayment;

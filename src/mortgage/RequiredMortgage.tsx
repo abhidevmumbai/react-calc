@@ -1,6 +1,6 @@
 import { Grid, TextField } from "@mui/material";
 import React, { ChangeEvent, useEffect, useState } from "react";
-import { Utils } from "../../utils/utils";
+import { Utils } from "../shared";
 
 interface RequiredMortgageProps {
   initDownPaymentPercentage: number;
@@ -9,7 +9,7 @@ interface RequiredMortgageProps {
   onTotalMortgageUpdate?: (totalMortgage: number, index: number) => void;
 }
 
-function RequiredMortgage(props: RequiredMortgageProps) {
+export function RequiredMortgage(props: RequiredMortgageProps) {
   const {
     initDownPaymentPercentage,
     askingPrice,
@@ -126,5 +126,3 @@ function RequiredMortgage(props: RequiredMortgageProps) {
     </Grid>
   );
 }
-
-export default RequiredMortgage;

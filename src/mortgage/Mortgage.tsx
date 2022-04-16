@@ -1,7 +1,6 @@
 import { Button, Grid, TextField } from "@mui/material";
 import { ChangeEvent, useEffect, useState } from "react";
-import MortgagePayment from "../../components/MortgagePayment/MortgagePayment";
-import RequiredMortgage from "../../components/RequiredMortgage/RequiredMortgage";
+import { MortgagePayment, RequiredMortgage } from ".";
 
 interface Mortgages {
   downPaymentPercentage: number;
